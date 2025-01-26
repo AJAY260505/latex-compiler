@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  compiler:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - overleaf-network
+    # For production, add resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"  # Changed the host port to 3002
+    environment:
+      - NEXT_PUBLIC_COMPILER_URL=http://compiler:3001/compile
+      - NODE_ENV=production
+    depends_on:
+      - compiler
+    networks:
+      - overleaf-network
+    # Health check for production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      
+      timeout: 10s
+      retries: 3
+
+networks:
+  overleaf-network:
+    driver: bridge
