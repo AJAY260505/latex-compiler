@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const tempDir = path.join(__dirname, '../temp');
+const tempDir = path.join(__dirname, 'temp');  // Adjust path if necessary
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 app.post('/compile', (req, res) => {
@@ -43,5 +43,5 @@ app.post('/compile', (req, res) => {
     }
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;  // Dynamic port for deployment
 app.listen(PORT, () => console.log(`Compiler running on port ${PORT}`));
