@@ -23,7 +23,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "3002:3000"  # Changed the host port to 3002
+      - "3000:3000"  # Changed the host port to 3002
     environment:
       - NEXT_PUBLIC_COMPILER_URL=http://compiler:3001/compile
       - NODE_ENV=production
