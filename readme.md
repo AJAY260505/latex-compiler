@@ -18,7 +18,7 @@ Follow these easy steps to get the app running on your local machine:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ajay260505/latex-compiler-app.git
+   git clone https://github.com/ajay260505/latex-compiler.git
    cd latex-compiler-app
    ```
 
