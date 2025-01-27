@@ -1,17 +1,45 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - overleaf-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
   compiler:
     build:
       context: ./server
       dockerfile: Dockerfile
+    container_name: compiler
     ports:
       - "3001:3001"
     environment:
       - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-secret-key
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - overleaf-network
-    # For production, add resource limits
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -22,22 +50,27 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    container_name: frontend
     ports:
-      - "3000:3000"  # Changed the host port to 3002
+      - "3000:3000"
     environment:
       - NEXT_PUBLIC_COMPILER_URL=http://compiler:3001/compile
       - NODE_ENV=production
     depends_on:
-      - compiler
+      compiler:
+        condition: service_healthy
     networks:
       - overleaf-network
-    # Health check for production
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
-      
       timeout: 10s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 384M
 
 networks:
   overleaf-network:
