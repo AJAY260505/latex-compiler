@@ -18,8 +18,8 @@ Follow these easy steps to get the app running on your local machine:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ajay260505/latex-compiler-app.git
-   cd latex-compiler-app
+   git clone https://github.com/ajay260505/latex-compiler.git
+   cd latex-compiler
    ```
 
 2. Build and run the app using Docker Compose:
